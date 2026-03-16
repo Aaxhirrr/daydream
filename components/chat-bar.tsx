@@ -127,7 +127,7 @@ export default function ChatBar({ onSubmit, isTransitioning, onDurationChange, o
                 className="flex items-center gap-1 text-xs text-white/70 hover:text-white transition-colors"
               >
                 <span className="uppercase tracking-wide">
-                  Video · Ray3.14 · 16:9 · {durationSeconds}s
+                  Video · Gemini director · 16:9 · {durationSeconds}s
                 </span>
                 <ChevronDown className="w-4 h-4" />
               </button>
