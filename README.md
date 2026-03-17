@@ -158,20 +158,7 @@ https://github.com/Aaxhirrr/daydream
 - Proof of Google Cloud Deployment / API Hits (recordings):
   - GitHub README doesn't support inline video playback (it strips `<video>`), so I'm committing the videos and linking them with click-to-open thumbnails.
 
-### Proof Recording 1: VertexCalls.mp4 🎥
 
-[![Proof Recording 1: VertexCalls.mp4](docs/VertexDashboard.png)](docs/submission/VertexCalls.mp4)
+### Proof Recording: GeminiDevpost_Hack.mp4 🎥
 
-Click the thumbnail to open: `docs/submission/VertexCalls.mp4`.
-
-### Proof Recording 2: GeminiDevpost_Hack.mp4 🎥
-
-[![Proof Recording 2: GeminiDevpost_Hack.mp4](docs/VertexCall.png)](docs/submission/GeminiDevpost_Hack.mp4)
-
-Click the thumbnail to open: `docs/submission/GeminiDevpost_Hack.mp4`.
-
-- Demo video (under 4 minutes, placeholder):
-
-```text
-TBD: add link to the 4-minute demo showing agentic + multimodal generation in real-time.
-```
+[![Watch Demo](https://img.youtube.com/vi/p-lnR_T5_Fc/maxresdefault.jpg)](https://youtu.be/p-lnR_T5_Fc?si=ZuXKzmpXS9cvIzXz)
