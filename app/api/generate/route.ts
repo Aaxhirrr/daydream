@@ -3,7 +3,8 @@ import { createDaydreamJob } from "@/lib/daydream-jobs"
 import type { DaydreamCreateJobResponse, DaydreamGenerationResult } from "@/lib/daydream-types"
 
 export const runtime = "nodejs"
-export const maxDuration = 900
+// Vercel Hobby plan supports up to 300s per Serverless Function invocation.
+export const maxDuration = 300
 
 export async function POST(request: Request) {
   try {
