@@ -178,11 +178,31 @@ https://github.com/Aaxhirrr/daydream
 ```
 
 - Proof of Google Cloud Deployment / API Hits (recordings):
+  - I embedded the recordings directly below so judges can play them inline from the README.
 
-```text
-Repo file: public/submission/Demo.mp4
-Repo file: public/submission/GeminiDevpost_Hack.mp4 (Git LFS)
-```
+### Proof Recording 1: Demo.mp4 🎥
+
+<video
+  src="https://raw.githubusercontent.com/Aaxhirrr/daydream/main/public/submission/Demo.mp4"
+  controls
+  playsinline
+  muted
+  style="max-width: 100%; border-radius: 16px;"
+></video>
+
+If the player doesn’t render in your GitHub view, open: `public/submission/Demo.mp4`.
+
+### Proof Recording 2: GeminiDevpost_Hack.mp4 🎥
+
+<video
+  src="https://raw.githubusercontent.com/Aaxhirrr/daydream/main/public/submission/GeminiDevpost_Hack.mp4"
+  controls
+  playsinline
+  muted
+  style="max-width: 100%; border-radius: 16px;"
+></video>
+
+If the player doesn’t render in your GitHub view, open: `public/submission/GeminiDevpost_Hack.mp4`.
 
 - Demo video (under 4 minutes, placeholder):
 
