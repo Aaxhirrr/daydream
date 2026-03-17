@@ -8,12 +8,14 @@ import type {
 } from "@/lib/daydream-types"
 import { randomUUID } from "node:crypto"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
+import os from "node:os"
 import path from "node:path"
 
 const COLLECTION_NAME = "daydream-threads"
 
 function threadsRoot() {
-  return path.join(process.cwd(), ".daydream-threads")
+  const runtimeRoot = process.env.DAYDREAM_STATE_DIR || (process.env.VERCEL ? os.tmpdir() : process.cwd())
+  return path.join(runtimeRoot, ".daydream-threads")
 }
 
 function threadFilePath(threadId: string) {
