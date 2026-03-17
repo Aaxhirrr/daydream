@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto"
 import { spawn } from "node:child_process"
 import { existsSync } from "node:fs"
 import { mkdir, readFile, writeFile } from "node:fs/promises"
+import os from "node:os"
 import path from "node:path"
 import { GoogleGenAI } from "@google/genai"
 import { Storage } from "@google-cloud/storage"
@@ -42,6 +43,40 @@ type DaydreamConfig = {
   imageModel: string
   lyriaModel: string
   veoModel: string
+}
+
+const SIGNED_URL_TTL_MS = 1000 * 60 * 60 * 24 * 7 // 7 days
+
+function assetBucketName() {
+  return process.env.DAYDREAM_ASSET_BUCKET || process.env.DAYDREAM_GCS_BUCKET || ""
+}
+
+function isServerlessRuntime() {
+  return (
+    Boolean(process.env.VERCEL) ||
+    Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME) ||
+    Boolean(process.env.LAMBDA_TASK_ROOT) ||
+    Boolean(process.env.NOW_REGION) ||
+    Boolean(process.env.VERCEL_REGION) ||
+    Boolean(process.env.VERCEL_ENV)
+  )
+}
+
+function resolveOutputDir(jobId: string) {
+  const configuredRoot = process.env.DAYDREAM_OUTPUT_DIR
+  if (configuredRoot) return path.join(configuredRoot, jobId)
+
+  if (isServerlessRuntime()) {
+    return path.join(os.tmpdir(), "daydream-output", jobId)
+  }
+
+  return path.join(process.cwd(), "public", "generated", jobId)
+}
+
+function isInsidePublicDir(filePath: string) {
+  const publicRoot = path.resolve(path.join(process.cwd(), "public")) + path.sep
+  const resolved = path.resolve(filePath)
+  return resolved.startsWith(publicRoot)
 }
 
 let googleAuth: GoogleAuth | null = null
@@ -203,6 +238,56 @@ function extensionFromMime(mimeType: string) {
   return "bin"
 }
 
+async function signedUrlForObject(bucketName: string, objectName: string) {
+  const file = getStorage().bucket(bucketName).file(objectName)
+  const [url] = await file.getSignedUrl({
+    action: "read",
+    expires: Date.now() + SIGNED_URL_TTL_MS,
+  })
+
+  return url
+}
+
+async function persistBufferAsAssetUrl({
+  buffer,
+  mimeType,
+  filePath,
+}: {
+  buffer: Buffer
+  mimeType: string
+  filePath: string
+}): Promise<string> {
+  if (isInsidePublicDir(filePath)) {
+    return publicUrlFor(filePath)
+  }
+
+  const bucketName = assetBucketName()
+  if (!bucketName) {
+    throw new Error(
+      "DAYDREAM_ASSET_BUCKET is required to persist generated media in serverless deployments (Vercel).",
+    )
+  }
+
+  const jobId = path.basename(path.dirname(filePath))
+  const objectName = `daydream/${jobId}/${path.basename(filePath)}`
+
+  await getStorage()
+    .bucket(bucketName)
+    .file(objectName)
+    .save(buffer, { contentType: mimeType, resumable: false })
+
+  return signedUrlForObject(bucketName, objectName)
+}
+
+async function persistDiskFileAsAssetUrl(filePath: string, mimeType: string): Promise<string> {
+  if (isInsidePublicDir(filePath)) {
+    return publicUrlFor(filePath)
+  }
+
+  const buffer = await readFile(filePath)
+  return persistBufferAsAssetUrl({ buffer, mimeType, filePath })
+}
+
 async function storeBase64Asset({
   base64,
   mimeType,
@@ -216,11 +301,13 @@ async function storeBase64Asset({
 }): Promise<StoredBinary> {
   const extension = extensionFromMime(mimeType)
   const filePath = path.join(jobDir, `${fileName}.${extension}`)
-  await writeFile(filePath, Buffer.from(base64, "base64"))
+  const buffer = Buffer.from(base64, "base64")
+  await writeFile(filePath, buffer)
+  const url = await persistBufferAsAssetUrl({ buffer, mimeType, filePath })
 
   return {
     filePath,
-    url: publicUrlFor(filePath),
+    url,
     mimeType,
   }
 }
@@ -240,6 +327,7 @@ async function storeFileAsset({
 }
 
 async function downloadGeneratedVideoUri(uri: string, filePath: string): Promise<InlineBinary> {
+  await mkdir(path.dirname(filePath), { recursive: true })
   if (uri.startsWith("gs://")) {
     const withoutScheme = uri.slice(5)
     const slashIndex = withoutScheme.indexOf("/")
@@ -435,6 +523,45 @@ async function buildStoryboard(
   return createFallbackStoryboard(prompt, durationSeconds, shotCount)
 }
 
+async function inlineBinaryFromAsset(reference: DaydreamMediaAsset): Promise<InlineBinary> {
+  if (reference.url.startsWith("http://") || reference.url.startsWith("https://")) {
+    const response = await fetch(reference.url)
+    if (!response.ok) {
+      throw new Error(`Failed to fetch reference asset: ${reference.url}`)
+    }
+
+    const arrayBuffer = await response.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+    return {
+      base64: buffer.toString("base64"),
+      mimeType: reference.mimeType || response.headers.get("content-type") || "application/octet-stream",
+    }
+  }
+
+  if (reference.url.startsWith("gs://")) {
+    const withoutScheme = reference.url.slice(5)
+    const slashIndex = withoutScheme.indexOf("/")
+    if (slashIndex === -1) {
+      throw new Error(`Invalid storage URI: ${reference.url}`)
+    }
+
+    const bucketName = withoutScheme.slice(0, slashIndex)
+    const objectName = withoutScheme.slice(slashIndex + 1)
+    const extension = extensionFromMime(reference.mimeType || "application/octet-stream")
+    const filePath = path.join(os.tmpdir(), "daydream-ref-cache", `${randomUUID()}.${extension}`)
+
+    await mkdir(path.dirname(filePath), { recursive: true })
+    await getStorage().bucket(bucketName).file(objectName).download({ destination: filePath })
+    return storeFileAsset({ sourcePath: filePath, mimeType: reference.mimeType })
+  }
+
+  // Local dev: served from /public.
+  return storeFileAsset({
+    sourcePath: filePathFromPublicUrl(reference.url),
+    mimeType: reference.mimeType,
+  })
+}
+
 async function generateHeroFrame(shot: DaydreamShot, referenceFrame?: DaydreamMediaAsset): Promise<InlineBinary> {
   const config = getConfig()
   const ai = createVertexClient(config.geminiLocation)
@@ -442,10 +569,7 @@ async function generateHeroFrame(shot: DaydreamShot, referenceFrame?: DaydreamMe
 
   if (referenceFrame?.url) {
     try {
-      referenceInlineData = await storeFileAsset({
-        sourcePath: filePathFromPublicUrl(referenceFrame.url),
-        mimeType: referenceFrame.mimeType,
-      })
+      referenceInlineData = await inlineBinaryFromAsset(referenceFrame)
     } catch {
       referenceInlineData = null
     }
@@ -625,8 +749,7 @@ async function generateClip(shot: DaydreamShot, image: InlineBinary, durationSec
     }
 
     if (generatedVideo?.uri) {
-      const tempFilePath = path.join(process.cwd(), "public", "generated", "__veo-cache", `${randomUUID()}.mp4`)
-      await mkdir(path.dirname(tempFilePath), { recursive: true })
+      const tempFilePath = path.join(os.tmpdir(), "daydream-veo-cache", `${randomUUID()}.mp4`)
       return downloadGeneratedVideoUri(generatedVideo.uri, tempFilePath)
     }
 
@@ -782,7 +905,7 @@ export async function runDaydreamPipeline(
         ? Math.min(Math.max(requestedDurationSeconds, shotCount * 2), shotCount * 3)
         : requestedDurationSeconds
 
-    const outputDir = path.join(process.cwd(), "public", "generated", jobId)
+    const outputDir = resolveOutputDir(jobId)
     await mkdir(outputDir, { recursive: true })
 
     console.log(`[daydream] job ${jobId} starting`)
@@ -860,7 +983,7 @@ export async function runDaydreamPipeline(
 
     const finalVideo: StoredBinary = {
       filePath: finalVideoPath,
-      url: publicUrlFor(finalVideoPath),
+      url: await persistDiskFileAsAssetUrl(finalVideoPath, "video/mp4"),
       mimeType: "video/mp4",
     }
 

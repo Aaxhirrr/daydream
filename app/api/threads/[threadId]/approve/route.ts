@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
+import { after } from "next/server"
 import { getDaydreamThread, saveDaydreamThread } from "@/lib/daydream-threads"
-import { createDaydreamJob } from "@/lib/daydream-jobs"
+import { createDaydreamJob, runDaydreamJob } from "@/lib/daydream-jobs"
 import type { DaydreamCreateJobResponse } from "@/lib/daydream-types"
 
 export const runtime = "nodejs"
@@ -27,6 +28,26 @@ export async function POST(
       thread.reel.durationSeconds,
       thread.reel.shotCount ?? thread.reel.storyboard.shots.length,
     )
+
+    try {
+      after(() =>
+        runDaydreamJob(
+          job.jobId,
+          plan.productionPrompt,
+          thread.reel,
+          thread.reel.durationSeconds,
+          thread.reel.shotCount ?? thread.reel.storyboard.shots.length,
+        ),
+      )
+    } catch {
+      void runDaydreamJob(
+        job.jobId,
+        plan.productionPrompt,
+        thread.reel,
+        thread.reel.durationSeconds,
+        thread.reel.shotCount ?? thread.reel.storyboard.shots.length,
+      )
+    }
 
     // Clear the pending remix in the thread as it's now running
     await saveDaydreamThread({

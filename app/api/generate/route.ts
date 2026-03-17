@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
-import { createDaydreamJob } from "@/lib/daydream-jobs"
+import { after } from "next/server"
+import { createDaydreamJob, runDaydreamJob } from "@/lib/daydream-jobs"
 import type { DaydreamCreateJobResponse, DaydreamGenerationResult } from "@/lib/daydream-types"
 
 export const runtime = "nodejs"
@@ -25,6 +26,16 @@ export async function POST(request: Request) {
     }
 
     const job = await createDaydreamJob(prompt, body.referenceResult, body.durationSeconds, body.shotCount)
+
+    try {
+      after(() =>
+        runDaydreamJob(job.jobId, prompt, body.referenceResult, body.durationSeconds, body.shotCount),
+      )
+    } catch {
+      // Fallback for environments where `after()` is not available.
+      void runDaydreamJob(job.jobId, prompt, body.referenceResult, body.durationSeconds, body.shotCount)
+    }
+
     const payload: DaydreamCreateJobResponse = {
       ok: true,
       jobId: job.jobId,

@@ -135,6 +135,10 @@ Local dev can use `gcloud` ADC, but Vercel can't. For Vercel, set either:
 - `GOOGLE_APPLICATION_CREDENTIALS_JSON` to a Service Account JSON (recommended), or
 - `FIREBASE_PROJECT_ID` / `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` for a Service Account that also has Vertex AI permissions.
 
+Also set:
+
+- `DAYDREAM_ASSET_BUCKET` (GCS bucket name) so generated videos/frames/audio can be persisted outside the serverless filesystem.
+
 ### 3) Run
 
 ```bash
