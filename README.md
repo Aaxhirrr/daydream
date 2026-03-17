@@ -1,5 +1,10 @@
 # DayDream 🎬✨
 
+**Vercel Preview:** https://daydream-ai-nu.vercel.app
+
+> [!CAUTION]
+> 🔴 **UI preview only:** the public Vercel build is just to show the look + flow of DayDream. The **GCP (GCS) asset bucket is not configured** there, so generations don’t have a stable place to persist outputs and the real pipeline is **massively truncated**.
+
 I built **DayDream**, a gloomy, liminal cinematic editing engine: you type a vibe, and it generates a finished reel with fast, premium cuts. It's built around **Gemini as an agentic creative director**, with image, video, and music generation orchestrated through **Google Cloud** ☁️.
 
 ## What It Does 🧠🎞️
@@ -128,17 +133,6 @@ Optional (if using Firestore / Firebase Admin):
 - `FIREBASE_CLIENT_EMAIL`
 - `FIREBASE_PRIVATE_KEY`
 
-### Deploying On Vercel (Auth Note) ⚡
-
-Local dev can use `gcloud` ADC, but Vercel can't. For Vercel, set either:
-
-- `GOOGLE_APPLICATION_CREDENTIALS_JSON` to a Service Account JSON (recommended), or
-- `FIREBASE_PROJECT_ID` / `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` for a Service Account that also has Vertex AI permissions.
-
-Also set:
-
-- `DAYDREAM_ASSET_BUCKET` (GCS bucket name) so generated videos/frames/audio can be persisted outside the serverless filesystem.
-
 ### 3) Run
 
 ```bash
@@ -157,6 +151,12 @@ http://localhost:3000
 
 ```text
 https://github.com/Aaxhirrr/daydream
+```
+
+- Vercel preview (UI-only):
+
+```text
+https://daydream-ai-nu.vercel.app
 ```
 
 - Proof of Google Cloud Deployment / API Hits (recordings):
