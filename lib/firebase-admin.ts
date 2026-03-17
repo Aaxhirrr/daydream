@@ -6,6 +6,9 @@ const FIREBASE_ADMIN_CONFIG = {
   privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
 }
 
+let cachedFirestore: admin.firestore.Firestore | null = null
+let firestoreSettingsApplied = false
+
 export function getFirestore() {
   if (!admin.apps.length) {
     if (FIREBASE_ADMIN_CONFIG.projectId && FIREBASE_ADMIN_CONFIG.clientEmail && FIREBASE_ADMIN_CONFIG.privateKey) {
@@ -21,7 +24,18 @@ export function getFirestore() {
   }
 
   try {
-    return admin.firestore()
+    if (!cachedFirestore) {
+      cachedFirestore = admin.firestore()
+    }
+
+    // Firestore rejects `undefined` values. We intentionally use `undefined` in a few places
+    // to mean "unset this field" when we `set()` the full document.
+    if (!firestoreSettingsApplied) {
+      cachedFirestore.settings({ ignoreUndefinedProperties: true })
+      firestoreSettingsApplied = true
+    }
+
+    return cachedFirestore
   } catch (e) {
     console.error("[daydream] Failed to initialize Firestore:", e)
     return null
