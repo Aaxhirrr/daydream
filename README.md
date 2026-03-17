@@ -182,27 +182,15 @@ https://github.com/Aaxhirrr/daydream
 
 ### Proof Recording 1: Demo.mp4 🎥
 
-<video
-  src="https://raw.githubusercontent.com/Aaxhirrr/daydream/main/public/submission/Demo.mp4"
-  controls
-  playsinline
-  muted
-  style="max-width: 100%; border-radius: 16px;"
-></video>
+[![Proof Recording 1: Demo.mp4](public/submission/Demo_poster.jpg)](public/submission/Demo.mp4)
 
-If the player doesn’t render in your GitHub view, open: `public/submission/Demo.mp4`.
+Click the thumbnail to play/download: `public/submission/Demo.mp4`.
 
 ### Proof Recording 2: GeminiDevpost_Hack.mp4 🎥
 
-<video
-  src="https://raw.githubusercontent.com/Aaxhirrr/daydream/main/public/submission/GeminiDevpost_Hack.mp4"
-  controls
-  playsinline
-  muted
-  style="max-width: 100%; border-radius: 16px;"
-></video>
+[![Proof Recording 2: GeminiDevpost_Hack.mp4](public/submission/GeminiDevpost_Hack_poster.jpg)](public/submission/GeminiDevpost_Hack.mp4)
 
-If the player doesn’t render in your GitHub view, open: `public/submission/GeminiDevpost_Hack.mp4`.
+Click the thumbnail to play/download: `public/submission/GeminiDevpost_Hack.mp4`.
 
 - Demo video (under 4 minutes, placeholder):
 
