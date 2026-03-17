@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto"
 import { mkdir, readFile, readdir, writeFile } from "node:fs/promises"
+import os from "node:os"
 import path from "node:path"
 import { runDaydreamPipeline } from "@/lib/daydream-pipeline"
 import type { DaydreamGenerationResult, DaydreamJobRecord } from "@/lib/daydream-types"
@@ -7,7 +8,9 @@ import type { DaydreamGenerationResult, DaydreamJobRecord } from "@/lib/daydream
 const DEFAULT_STAGE = "Writing your storyboard..."
 
 function jobsRoot() {
-  return path.join(process.cwd(), ".daydream-jobs")
+  // Vercel serverless has a read-only filesystem except for /tmp.
+  const runtimeRoot = process.env.DAYDREAM_STATE_DIR || (process.env.VERCEL ? os.tmpdir() : process.cwd())
+  return path.join(runtimeRoot, ".daydream-jobs")
 }
 
 function jobFilePath(jobId: string) {
@@ -49,7 +52,17 @@ async function updateDaydreamJob(jobId: string, patch: Partial<DaydreamJobRecord
 }
 
 export async function listDaydreamJobs() {
-  await mkdir(jobsRoot(), { recursive: true })
+  try {
+    await mkdir(jobsRoot(), { recursive: true })
+  } catch (error: any) {
+    // If we can't write state (rare), keep the app alive by treating it as empty.
+    if (error?.code === "EPERM" || error?.code === "EROFS") {
+      return []
+    }
+
+    throw error
+  }
+
   const files = await readdir(jobsRoot())
   const jobFiles = files.filter((file) => file.endsWith(".json"))
 
