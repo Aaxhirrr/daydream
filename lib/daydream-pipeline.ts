@@ -6,6 +6,7 @@ import path from "node:path"
 import { GoogleGenAI } from "@google/genai"
 import { Storage } from "@google-cloud/storage"
 import { GoogleAuth } from "google-auth-library"
+import { ensureGoogleApplicationCredentials } from "@/lib/google-credentials"
 import type {
   DaydreamGenerationResult,
   DaydreamMediaAsset,
@@ -43,10 +44,26 @@ type DaydreamConfig = {
   veoModel: string
 }
 
-const googleAuth = new GoogleAuth({
-  scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-})
-const storage = new Storage()
+let googleAuth: GoogleAuth | null = null
+let storage: Storage | null = null
+
+function getGoogleAuth() {
+  ensureGoogleApplicationCredentials()
+  if (!googleAuth) {
+    googleAuth = new GoogleAuth({
+      scopes: ["https://www.googleapis.com/auth/cloud-platform"],
+    })
+  }
+  return googleAuth
+}
+
+function getStorage() {
+  ensureGoogleApplicationCredentials()
+  if (!storage) {
+    storage = new Storage()
+  }
+  return storage
+}
 
 function getConfig(): DaydreamConfig {
   const project = process.env.GOOGLE_CLOUD_PROJECT
@@ -232,7 +249,7 @@ async function downloadGeneratedVideoUri(uri: string, filePath: string): Promise
 
     const bucketName = withoutScheme.slice(0, slashIndex)
     const objectName = withoutScheme.slice(slashIndex + 1)
-    await storage.bucket(bucketName).file(objectName).download({ destination: filePath })
+    await getStorage().bucket(bucketName).file(objectName).download({ destination: filePath })
     return storeFileAsset({ sourcePath: filePath, mimeType: "video/mp4" })
   }
 
@@ -480,7 +497,7 @@ async function generateHeroFrame(shot: DaydreamShot, referenceFrame?: DaydreamMe
 }
 
 async function getAccessToken() {
-  const client = await googleAuth.getClient()
+  const client = await getGoogleAuth().getClient()
   const token = await client.getAccessToken()
   const resolved = typeof token === "string" ? token : token?.token
 

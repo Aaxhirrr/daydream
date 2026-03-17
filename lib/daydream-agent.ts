@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai"
+import { ensureGoogleApplicationCredentials } from "@/lib/google-credentials"
 import type { DaydreamGenerationResult, DaydreamRemixAgentPlan } from "@/lib/daydream-types"
 
 type DaydreamAgentConfig = {
@@ -21,6 +22,7 @@ function getAgentConfig(): DaydreamAgentConfig {
 }
 
 function createVertexClient() {
+  ensureGoogleApplicationCredentials()
   const config = getAgentConfig()
 
   return new GoogleGenAI({

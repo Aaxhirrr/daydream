@@ -126,6 +126,13 @@ Optional (if using Firestore / Firebase Admin):
 - `FIREBASE_CLIENT_EMAIL`
 - `FIREBASE_PRIVATE_KEY`
 
+### Deploying On Vercel (Auth Note) ⚡
+
+Local dev can use `gcloud` ADC, but Vercel can't. For Vercel, set either:
+
+- `GOOGLE_APPLICATION_CREDENTIALS_JSON` to a Service Account JSON (recommended), or
+- `FIREBASE_PROJECT_ID` / `FIREBASE_CLIENT_EMAIL` / `FIREBASE_PRIVATE_KEY` for a Service Account that also has Vertex AI permissions.
+
 ### 3) Run
 
 ```bash
@@ -147,17 +154,17 @@ https://github.com/Aaxhirrr/daydream
 ```
 
 - Proof of Google Cloud Deployment / API Hits (recordings):
-  - GitHub README doesn't support inline video playback (it strips `<video>`), so I'm committing the videos and linking them with click-to-open posters.
+  - GitHub README doesn't support inline video playback (it strips `<video>`), so I'm committing the videos and linking them with click-to-open thumbnails.
 
-### Proof Recording 1: Demo.mp4 🎥
+### Proof Recording 1: VertexCalls.mp4 🎥
 
-[![Proof Recording 1: Demo.mp4](docs/submission/Demo_poster.jpg)](docs/submission/Demo.mp4)
+[![Proof Recording 1: VertexCalls.mp4](docs/VertexDashboard.png)](docs/submission/VertexCalls.mp4)
 
-Click the thumbnail to open: `docs/submission/Demo.mp4`.
+Click the thumbnail to open: `docs/submission/VertexCalls.mp4`.
 
 ### Proof Recording 2: GeminiDevpost_Hack.mp4 🎥
 
-[![Proof Recording 2: GeminiDevpost_Hack.mp4](docs/submission/GeminiDevpost_Hack_poster.jpg)](docs/submission/GeminiDevpost_Hack.mp4)
+[![Proof Recording 2: GeminiDevpost_Hack.mp4](docs/VertexCall.png)](docs/submission/GeminiDevpost_Hack.mp4)
 
 Click the thumbnail to open: `docs/submission/GeminiDevpost_Hack.mp4`.
 
