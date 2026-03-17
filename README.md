@@ -1,10 +1,5 @@
 # DayDream 🎬✨
 
-**Vercel Preview:** https://daydream-ai-nu.vercel.app
-
-> [!CAUTION]
-> 🔴 **UI preview only:** the public Vercel build is just to show the look + flow of DayDream. The **GCP (GCS) asset bucket is not configured** there, so generations don’t have a stable place to persist outputs and the real pipeline is **massively truncated**.
-
 I built **DayDream**, a gloomy, liminal cinematic editing engine: you type a vibe, and it generates a finished reel with fast, premium cuts. It's built around **Gemini as an agentic creative director**, with image, video, and music generation orchestrated through **Google Cloud** ☁️.
 
 ## What It Does 🧠🎞️
@@ -145,6 +140,11 @@ Open:
 http://localhost:3000
 ```
 
+**Quick Vercel Preview:** https://daydream-ai-nu.vercel.app
+
+> [!CAUTION]
+> 🔴 **UI preview only:** the public Vercel build is just to show the look + flow of DayDream. The **GCP (GCS) asset bucket is not configured** there, so generations don’t have a stable place to persist outputs and the real pipeline is **massively truncated**.
+
 ## Submission Links 📦
 
 - Public repository:
@@ -153,11 +153,6 @@ http://localhost:3000
 https://github.com/Aaxhirrr/daydream
 ```
 
-- Vercel preview (UI-only):
-
-```text
-https://daydream-ai-nu.vercel.app
-```
 
 - Proof of Google Cloud Deployment / API Hits (recordings):
   - GitHub README doesn't support inline video playback (it strips `<video>`), so I'm committing the videos and linking them with click-to-open thumbnails.
