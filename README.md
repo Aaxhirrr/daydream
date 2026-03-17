@@ -79,24 +79,14 @@ Here are screenshots as well:
 
 ## Proof of Work: Live Vertex AI Orchestration ⚡
 
-![Vertex API Calls](./docs/VertexCall.png)
 ![Vertex Dashboard](./docs/VertexDashboard.png)
+
+![Vertex API Calls](./docs/VertexCall.png)
+
 
 ## Architecture Diagram 🗺️
 
 ![DayDream Architecture](docs/architecture.svg)
-
-## UI Screenshots 🎛️🖼️
-
-These are a few UI/asset snapshots I used while iterating on the DayDream vibe.
-
-![DayDream Logo](docs/ui/logo.png)
-
-![DayDream Alt Logo (Black)](docs/ui/black.png)
-
-![DayDream Alt Logo (White)](docs/ui/white.png)
-
-![DayDream Architecture (PNG)](docs/ui/daydream-architecture.png)
 
 ## Learnings (What I Found While Building) 📝
 
