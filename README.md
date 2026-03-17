@@ -86,6 +86,18 @@ Here are screenshots as well:
 
 ![DayDream Architecture](docs/architecture.svg)
 
+## UI Screenshots 🎛️🖼️
+
+These are a few UI/asset snapshots I used while iterating on the DayDream vibe.
+
+![DayDream Logo](docs/ui/logo.png)
+
+![DayDream Alt Logo (Black)](docs/ui/black.png)
+
+![DayDream Alt Logo (White)](docs/ui/white.png)
+
+![DayDream Architecture (PNG)](docs/ui/daydream-architecture.png)
+
 ## Learnings (What I Found While Building) 📝
 
 - **Quota is real**: Velocity Edit mode (8/10 cuts) makes many more generation calls (hero frames + Veo clips), so it can hit quota limits faster.
@@ -173,4 +185,3 @@ Click the thumbnail to open: `docs/submission/GeminiDevpost_Hack.mp4`.
 ```text
 TBD: add link to the 4-minute demo showing agentic + multimodal generation in real-time.
 ```
-
