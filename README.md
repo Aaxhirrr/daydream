@@ -1,14 +1,14 @@
 # DayDream 🎬✨
 
-I built **DayDream**, a gloomy, liminal cinematic editing engine: you type a vibe, and it generates a finished reel with fast, premium cuts. It’s built around **Gemini as an agentic creative director**, with image, video, and music generation orchestrated through **Google Cloud** ☁️.
+I built **DayDream**, a gloomy, liminal cinematic editing engine: you type a vibe, and it generates a finished reel with fast, premium cuts. It's built around **Gemini as an agentic creative director**, with image, video, and music generation orchestrated through **Google Cloud** ☁️.
 
 ## What It Does 🧠🎞️
 
 1. **Login / Landing**
-1. **Studio (Main Page)**
-1. **Chat Bar Controls**
-1. **Generation Pipeline**
-1. **DreamBoard + Per-Reel Agent**
+2. **Studio (Main Page)**
+3. **Chat Bar Controls**
+4. **Generation Pipeline**
+5. **DreamBoard + Per-Reel Agent**
 
 ### 1) Login / Landing 🔐
 
@@ -17,15 +17,15 @@ I built **DayDream**, a gloomy, liminal cinematic editing engine: you type a vib
 
 ### 2) Studio (Main Page) 🧪
 
-- Minimal, cinematic workspace that feels like a “dream lab” rather than a traditional editor.
-- A “Dreaming” overlay shows real-time stages while the backend generates (storyboard, audio, hero frames, clips, stitch).
+- Minimal, cinematic workspace that feels like a "dream lab" rather than a traditional editor.
+- A "Dreaming" overlay shows real-time stages while the backend generates (storyboard, audio, hero frames, clips, stitch).
 
 ### 3) Chat Bar Controls ⌨️
 
 - Prompt-to-edit workflow: the chat bar is the control surface.
 - Duration modes: **12s**, **15s**, **30s**
 - Velocity Edit (fast-cut mode): choose **4**, **8**, or **10** hero-frame cuts.
-  - For 8/10 cuts, Veo generates short clips (2–3 seconds per shot) for a faster, more hype edit feel.
+  - For 8/10 cuts, Veo generates short clips (2-3 seconds per shot) for a faster, more hype edit feel.
 
 ### 4) Generation Pipeline (Gemini Heavy) 🧬
 
@@ -34,7 +34,7 @@ DayDream orchestrates four generation phases:
 1. **Gemini Director (Text)**
    - Produces a structured storyboard: synopsis, visual style, audio direction, and shot-by-shot prompts.
 2. **Gemini Image (Hero Frames)**
-   - Generates “hero frames” for each shot so the entire reel shares one coherent cinematic look.
+   - Generates "hero frames" for each shot so the entire reel shares one coherent cinematic look.
 3. **Veo (Video)**
    - Animates each hero frame into a short clip (fast cuts for Velocity Edit).
 4. **Lyria (Music)**
@@ -63,65 +63,27 @@ Finally, I stitch the clip sequence and soundtrack into a single final reel usin
 
 ## Proof of Google Cloud Usage ☁️✅
 
-Even in local dev, all core “intelligence” is executed through Google Cloud APIs:
+Even in local dev, all core "intelligence" is executed through Google Cloud APIs:
 
 - Vertex AI client + model calls: `lib/daydream-pipeline.ts`
   - Gemini (text + image), Veo (video), Lyria (audio)
 - Agentic remix planning: `app/api/remix-agent/route.ts` + `lib/daydream-agent.ts`
 - Threaded remix approval endpoint: `app/api/threads/[threadId]/approve/route.ts`
 
-For “Proof of Google Cloud Deployment / API hits”, I include recordings (see links below), plus code pointers that show the exact Google Cloud services and APIs in use.
+For "Proof of Google Cloud Deployment / API hits", I include recordings (see links below), plus code pointers that show the exact Google Cloud services and APIs in use.
 
 - A short screen recording showing backend logs from a GCP deployment (Cloud Run recommended) while a generation is triggered.
 - Or a quick console walkthrough showing Vertex AI traffic/metrics for the project and the app calling it.
 
 ## Architecture Diagram 🗺️
 
-```mermaid
-flowchart TB
-  U[User] -->|Prompt + Settings\n(12/15/30s, 4/8/10 cuts)| FE[Next.js Frontend\nStudio + DreamBoard]
-
-  FE -->|POST /api/generate| API1[Next.js API Route\n/app/api/generate]
-  FE -->|POST /api/remix-agent| API2[Next.js API Route\n/app/api/remix-agent]
-  FE -->|GET/POST /api/threads/*| API3[Thread API Routes\n/app/api/threads/*]
-  FE -->|poll GET /api/generate/:jobId| API4[Job Status Route\n/app/api/generate/[jobId]]
-
-  API1 --> JOBS[Job Runner\nlib/daydream-jobs.ts]
-  API4 --> JOBS
-  API3 --> THREADS[Thread Store\nlib/daydream-threads.ts]
-
-  JOBS --> PIPE[DayDream Pipeline\nlib/daydream-pipeline.ts]
-  API2 --> AGENT[Gemini Director Agent\nlib/daydream-agent.ts]
-  AGENT -->|proposes plan\n(approval required)| THREADS
-  API3 -->|approve| JOBS
-
-  subgraph GCP[Google Cloud / Vertex AI]
-    GEMTXT[Gemini Text\nStoryboard + Director]
-    GEMIMG[Gemini Image\nHero Frames]
-    VEO[Veo\nImage to Video Clips]
-    LYRIA[Lyria\nInstrumental Score]
-  end
-
-  PIPE --> GEMTXT
-  PIPE --> GEMIMG
-  PIPE --> VEO
-  PIPE --> LYRIA
-
-  PIPE --> FFMPEG[FFmpeg Stitching\nffmpeg-static]
-  FFMPEG --> OUT[Final Reel + Assets\npublic/generated/*]
-
-  THREADS -->|local JSON\n.daydream-threads/*| DISK[(Local FS)]
-  JOBS -->|local JSON\n.daydream-jobs/*| DISK
-
-  PIPE -. optional .-> GCS[Cloud Storage\n@google-cloud/storage]
-  THREADS -. optional .-> FS[Firestore\n(firebase-admin)]
-```
+![DayDream Architecture](docs/architecture.svg)
 
 ## Learnings (What I Found While Building) 📝
 
 - **Quota is real**: Velocity Edit mode (8/10 cuts) makes many more generation calls (hero frames + Veo clips), so it can hit quota limits faster.
 - **Agentic UX needs guardrails**: auto-generation from casual chat is expensive. A dedicated approval step keeps the creative conversation fluid without wasting compute.
-- **Fast-cut pacing changes everything**: short 2–3 second clips per shot produce a more energetic edit, even with the same vibe prompt.
+- **Fast-cut pacing changes everything**: short 2-3 second clips per shot produce a more energetic edit, even with the same vibe prompt.
 
 ## Spin-Up Instructions (Judges) 🚀
 
@@ -178,22 +140,23 @@ https://github.com/Aaxhirrr/daydream
 ```
 
 - Proof of Google Cloud Deployment / API Hits (recordings):
-  - I embedded the recordings directly below so judges can play them inline from the README.
+  - GitHub README doesn't support inline video playback (it strips `<video>`), so I'm committing the videos and linking them with click-to-open posters.
 
 ### Proof Recording 1: Demo.mp4 🎥
 
-[![Proof Recording 1: Demo.mp4](public/submission/Demo_poster.jpg)](public/submission/Demo.mp4)
+[![Proof Recording 1: Demo.mp4](docs/submission/Demo_poster.jpg)](docs/submission/Demo.mp4)
 
-Click the thumbnail to play/download: `public/submission/Demo.mp4`.
+Click the thumbnail to open: `docs/submission/Demo.mp4`.
 
 ### Proof Recording 2: GeminiDevpost_Hack.mp4 🎥
 
-[![Proof Recording 2: GeminiDevpost_Hack.mp4](public/submission/GeminiDevpost_Hack_poster.jpg)](public/submission/GeminiDevpost_Hack.mp4)
+[![Proof Recording 2: GeminiDevpost_Hack.mp4](docs/submission/GeminiDevpost_Hack_poster.jpg)](docs/submission/GeminiDevpost_Hack.mp4)
 
-Click the thumbnail to play/download: `public/submission/GeminiDevpost_Hack.mp4`.
+Click the thumbnail to open: `docs/submission/GeminiDevpost_Hack.mp4`.
 
 - Demo video (under 4 minutes, placeholder):
 
 ```text
 TBD: add link to the 4-minute demo showing agentic + multimodal generation in real-time.
 ```
+
