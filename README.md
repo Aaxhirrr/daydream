@@ -177,10 +177,10 @@ http://localhost:3000
 https://github.com/Aaxhirrr/daydream
 ```
 
-- Proof of Google Cloud Deployment (recording placeholder):
+- Proof of Google Cloud Deployment / API Hits (recording):
 
 ```text
-TBD: add link to a short screen recording showing backend running on GCP (Cloud Run / logs / metrics).
+Repo file: public/submission/Demo.mp4
 ```
 
 - Demo video (under 4 minutes, placeholder):
@@ -188,4 +188,3 @@ TBD: add link to a short screen recording showing backend running on GCP (Cloud 
 ```text
 TBD: add link to the 4-minute demo showing agentic + multimodal generation in real-time.
 ```
-
