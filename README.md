@@ -75,6 +75,13 @@ For "Proof of Google Cloud Deployment / API hits", I include recordings (see lin
 - A short screen recording showing backend logs from a GCP deployment (Cloud Run recommended) while a generation is triggered.
 - Or a quick console walkthrough showing Vertex AI traffic/metrics for the project and the app calling it.
 
+Here are screenshots as well:
+
+## Proof of Work: Live Vertex AI Orchestration ⚡
+
+![Vertex API Calls](./docs/VertexCall.png)
+![Vertex Dashboard](./docs/VertexDashboard.png)
+
 ## Architecture Diagram 🗺️
 
 ![DayDream Architecture](docs/architecture.svg)
